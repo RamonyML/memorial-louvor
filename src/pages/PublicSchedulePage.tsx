@@ -75,9 +75,9 @@ export function PublicSchedulePage() {
             </aside>
           </div>
         )}
-
-        <PublicFooter />
       </main>
+
+      <PublicFooter />
     </div>
   );
 }
