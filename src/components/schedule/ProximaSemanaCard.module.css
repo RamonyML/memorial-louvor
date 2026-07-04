@@ -44,6 +44,7 @@
   justify-content: space-between;
   gap: 8px;
   font-size: 12.5px;
+  min-width: 0;
 }
 
 .lbl {
@@ -59,6 +60,9 @@
   color: var(--text);
   font-weight: 500;
   text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vozes {
