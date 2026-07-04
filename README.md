@@ -2,9 +2,9 @@
 
 Sistema web para gerenciar a escala do Ministério de Louvor: uma página
 pública com a escala do mês e uma área administrativa (login com
-Google) onde quem organiza a escala cadastra cultos, define quem toca
-cada instrumento, gerencia a equipe e exporta a escala como imagem
-para o WhatsApp/status.
+e-mail e senha) onde quem organiza a escala cadastra cultos, define
+quem toca cada instrumento, gerencia a equipe e exporta a escala como
+imagem para o WhatsApp/status.
 
 ## Rodando localmente
 
@@ -17,12 +17,11 @@ Acesse `http://localhost:5173`. A área administrativa fica em `/admin`.
 
 ## Autenticação da área administrativa
 
-O login em `/admin` usa **Firebase Authentication com Google** — qualquer
-pessoa pode entrar com a conta Google dela, mas só quem estiver na lista
-`ADMIN_EMAILS` (em `src/firebase/config.ts`) vira admin de fato; quem
-não estiver vê uma tela de "acesso negado". Para dar acesso a mais
-pessoas (outros líderes de louvor), adicione o e-mail Google delas
-nessa lista.
+O login em `/admin` usa **Firebase Authentication com e-mail e senha**.
+Não existe cadastro pelo site — as contas são criadas manualmente em
+*Firebase Console → Authentication → Users → Add user*. Qualquer
+conta criada lá consegue entrar; para dar acesso a mais pessoas (outros
+líderes de louvor), basta criar mais usuários por lá.
 
 ## Banco de dados
 
@@ -49,25 +48,23 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
       allow read: if true;
-      allow write: if request.auth != null
-        && request.auth.token.email in ['ramonyml@gmail.com'];
+      allow write: if request.auth != null;
     }
   }
 }
 ```
 
 Isso permite que qualquer pessoa **leia** a escala (necessário para a
-página pública) mas só as contas Google listadas conseguem **escrever**
-— mesmo que alguém descubra a configuração do Firebase (que não é
-segredo, é pública em qualquer app web) ou tente burlar o front-end.
-Lembre de manter a lista de e-mails da regra igual à `ADMIN_EMAILS` do
-código.
+página pública) mas só quem estiver logado (com uma conta criada
+manualmente no Firebase Console) consegue **escrever** — mesmo que
+alguém descubra a configuração do Firebase (que não é segredo, é
+pública em qualquer app web) ou tente burlar o front-end.
 
 ## Estrutura do projeto
 
 ```
 src/
-  firebase/     configuração do Firebase (app, Firestore, Auth, lista de admins)
+  firebase/     configuração do Firebase (app, Firestore, Auth)
   data/         tipos, dados de seed e repository (Firestore)
   context/      estado global: escala (cultos/membros), autenticação, toast
   components/

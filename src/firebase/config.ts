@@ -17,11 +17,3 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-/**
- * Contas Google autorizadas a entrar na área administrativa.
- * Qualquer pessoa pode fazer login com Google, mas só quem estiver
- * nesta lista vira "admin" de fato. Adicione outros e-mails aqui
- * conforme mais pessoas passarem a organizar a escala.
- */
-export const ADMIN_EMAILS = ['ramonyml@gmail.com'];
-

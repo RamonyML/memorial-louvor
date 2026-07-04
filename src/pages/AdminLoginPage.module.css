@@ -49,39 +49,42 @@
   margin: 8px 0 4px;
 }
 
-.negado {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin: 4px 0 16px;
-}
-
-.negado strong {
-  color: var(--text);
-}
-
-.googleBtn {
+.field {
   width: 100%;
+  text-align: left;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 11px 18px;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 8px;
-  transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease),
-    transform 0.2s var(--ease);
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
 }
 
-.googleBtn:hover {
-  border-color: var(--primary);
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field input {
   background: var(--surface-alt);
-  transform: translateY(-1px);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 11px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s var(--ease);
+}
+
+.field input:focus {
+  border-color: var(--primary);
+}
+
+.erro {
+  display: block;
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 6px;
 }
 
 .voltar {
