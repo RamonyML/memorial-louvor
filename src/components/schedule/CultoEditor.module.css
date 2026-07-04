@@ -115,16 +115,6 @@
   margin-bottom: 3px;
 }
 
-.instBody select {
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  cursor: pointer;
-}
 
 .vozesSection {
   background: var(--surface);
@@ -181,14 +171,7 @@
   margin-top: 12px;
 }
 
-.addVoz select {
+.addVoz > *:first-child {
   flex: 1;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 8px 12px;
-  font-size: 13px;
-  outline: none;
+  min-width: 0;
 }
-
-.addVoz select:focus { border-color: var(--primary); }

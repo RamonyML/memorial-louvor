@@ -3,6 +3,7 @@ import type { Culto, InstrumentoKey } from '../../data/types';
 import { INSTRUMENTO_FUNCAO } from '../../data/types';
 import { INSTRUMENT_ICONS, IconVoz } from '../icons/InstrumentIcons';
 import { Button } from '../common/Button';
+import { Dropdown } from '../common/Dropdown';
 import { MaterialIcon } from '../icons/MaterialIcon';
 import { useSchedule } from '../../context/ScheduleContext';
 import { diaSemana, fmtDia, fmtMes } from '../../utils/date';
@@ -68,13 +69,12 @@ export function CultoEditor({ culto }: CultoEditorProps) {
                 <div className={styles.instIcon}><Icon size={19} /></div>
                 <div className={styles.instBody}>
                   <div className={styles.instLabel}>{funcao}</div>
-                  <select
+                  <Dropdown
+                    variant="ghost"
                     value={culto[key]}
-                    onChange={(e) => updateCulto(culto.id, { [key]: e.target.value })}
-                  >
-                    <option value="">— selecionar —</option>
-                    {opcoes.map((m) => <option key={m.id} value={m.nome}>{m.nome}</option>)}
-                  </select>
+                    onChange={(v) => updateCulto(culto.id, { [key]: v })}
+                    options={opcoes.map((m) => ({ value: m.nome, label: m.nome }))}
+                  />
                 </div>
               </div>
             );
@@ -99,10 +99,12 @@ export function CultoEditor({ culto }: CultoEditorProps) {
           {culto.vozes.length === 0 && <span className={styles.semVozes}>Nenhuma voz escalada</span>}
         </div>
         <div className={styles.addVoz}>
-          <select value={novaVoz} onChange={(e) => setNovaVoz(e.target.value)}>
-            <option value="">+ Adicionar voz...</option>
-            {membrosVoz.map((m) => <option key={m.id} value={m.nome}>{m.nome}</option>)}
-          </select>
+          <Dropdown
+            value={novaVoz}
+            onChange={setNovaVoz}
+            options={membrosVoz.map((m) => ({ value: m.nome, label: m.nome }))}
+            placeholder="+ Adicionar voz..."
+          />
           <Button
             variant="ghost"
             onClick={() => { if (novaVoz) { addVoz(culto.id, novaVoz); setNovaVoz(''); } }}
