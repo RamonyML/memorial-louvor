@@ -1,0 +1,147 @@
+.hero {
+  position: relative;
+  background: linear-gradient(155deg, var(--primary) 0%, #7a352c 100%);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 32px 36px 28px;
+  color: var(--text);
+  overflow: hidden;
+  height: 100%;
+}
+
+.badge {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border-radius: var(--r-full);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.dia {
+  font-size: 140px;
+  color: var(--text);
+  line-height: 0.78;
+}
+
+.topInfo { min-width: 0; }
+
+.diaSemana {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.mes {
+  font-size: 14px;
+  color: rgba(242, 224, 213, 0.75);
+  margin-top: 3px;
+}
+
+.horarios {
+  display: flex;
+  gap: 26px;
+  margin-top: 14px;
+}
+
+.horarios span {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.horarios em {
+  font-style: normal;
+  font-size: 12.5px;
+  color: rgba(242, 224, 213, 0.65);
+}
+
+.horarios strong {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.instGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.instItem, .vozes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(242, 224, 213, 0.12);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+}
+
+.vozes { margin-top: 4px; align-items: flex-start; }
+.vozesBody { min-width: 0; }
+
+.instIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  background: rgba(212, 168, 83, 0.16);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.instLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(242, 224, 213, 0.6);
+}
+
+.instNome {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.vozesChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.semVozes {
+  font-size: 13px;
+  color: rgba(242, 224, 213, 0.55);
+}
+
+.chip {
+  background: rgba(242, 224, 213, 0.14);
+  border-radius: var(--r-full);
+  padding: 4px 13px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .top { flex-wrap: wrap; }
+  .dia { font-size: 96px; }
+  .instGrid { grid-template-columns: repeat(2, 1fr); }
+}

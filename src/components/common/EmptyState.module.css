@@ -1,0 +1,31 @@
+.empty {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.iconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r-full);
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.empty h3 {
+  font-size: 18px;
+  color: var(--text);
+}
+
+.empty p {
+  font-size: 13.5px;
+  max-width: 320px;
+}

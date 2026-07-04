@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ministério de Louvor — Igreja Batista Memorial</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  /* ── RESET & BASE ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:        #1A0A07;
+    --bg2:       #2A1510;
+    --hero:      #A0453A;
+    --hero-m:    #B85042;
+    --hero-l:    #C97B63;
+    --hero-xl:   #D4937E;
+    --card-dark: #2B1410;
+    --card-teal: #1E3030;
+    --sage:      #2E4E45;
+    --sage-b:    #4A8070;
+    --gold:      #D4A853;
+    --sand:      #F2E0D5;
+    --muted:     #9A7060;
+    --white:     #FFFFFF;
+    --border:    #4A2820;
+    --r:         10px;
+    --font-display: Georgia, 'Times New Roman', serif;
+    --font-body:    'Segoe UI', system-ui, sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--sand);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── APP SHELL ── */
+  .app-header {
+    background: #120705;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .app-logo { font-family: var(--font-display); font-size: 20px; color: var(--hero-l); font-weight: bold; }
+  .app-logo span { color: var(--muted); font-size: 13px; font-weight: normal; margin-left: 10px; font-family: var(--font-body); }
+
+  .app-nav { display: flex; gap: 4px; }
+  .nav-btn {
+    padding: 7px 16px; border-radius: 6px; border: none;
+    background: transparent; color: var(--muted); cursor: pointer;
+    font-size: 13px; font-weight: 600; transition: all .15s;
+  }
+  .nav-btn:hover { background: var(--bg2); color: var(--sand); }
+  .nav-btn.active { background: var(--hero); color: var(--white); }
+
+  .app-body { flex: 1; display: flex; overflow: hidden; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 280px; flex-shrink: 0;
+    background: #160806;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border); }
+  .sidebar-title {
+    font-size: 9px; font-weight: 700; letter-spacing: 2.5px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* mês nav */
+  .mes-nav { display: flex; align-items: center; justify-content: space-between; }
+  .mes-nav h2 { font-family: var(--font-display); font-size: 18px; color: var(--hero-l); }
+  .mes-nav button {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--muted); width: 28px; height: 28px; border-radius: 6px;
+    cursor: pointer; font-size: 14px; transition: all .15s;
+  }
+  .mes-nav button:hover { background: var(--hero); color: var(--white); border-color: var(--hero); }
+
+  /* lista de cultos na sidebar */
+  .culto-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    transition: background .15s; margin-bottom: 4px;
+    border: 1px solid transparent;
+  }
+  .culto-item:hover { background: var(--bg2); }
+  .culto-item.selected { background: var(--hero); border-color: var(--hero-l); }
+  .culto-item.hoje { border-color: var(--gold); }
+  .culto-dia {
+    font-family: var(--font-display); font-size: 28px; font-weight: bold;
+    color: var(--hero-l); line-height: 1; min-width: 44px;
+  }
+  .culto-item.selected .culto-dia { color: var(--sand); }
+  .culto-info { flex: 1; }
+  .culto-info-titulo { font-size: 12px; font-weight: 600; color: var(--sand); }
+  .culto-info-sub { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .badge-hoje {
+    background: var(--gold); color: var(--bg); font-size: 8px;
+    font-weight: 700; letter-spacing: 1.5px; padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .badge-vazio {
+    background: var(--border); color: var(--muted); font-size: 8px;
+    font-weight: 600; padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* painel edição do culto selecionado */
+  .editor-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap;
+  }
+  .editor-titulo { font-family: var(--font-display); font-size: 28px; color: var(--hero-l); }
+  .editor-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .btn {
+    padding: 8px 18px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 13px; font-weight: 600; transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--hero); color: var(--white); }
+  .btn-primary:hover { background: var(--hero-m); }
+  .btn-gold { background: var(--gold); color: var(--bg); }
+  .btn-gold:hover { opacity: .9; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--hero-l); color: var(--hero-l); }
+  .btn-danger { background: #5a1a18; color: #ff9988; border: 1px solid #7a2a28; }
+  .btn-danger:hover { background: #7a2020; }
+
+  /* horários */
+  .horarios-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .horario-box {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 18px; flex: 1; min-width: 160px;
+  }
+  .horario-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .horario-input {
+    background: transparent; border: none; outline: none;
+    font-size: 26px; font-weight: bold; color: var(--gold);
+    font-family: var(--font-display); width: 100%;
+  }
+
+  /* grid de instrumentos */
+  .inst-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .inst-card {
+    background: var(--card-dark); border-radius: 10px;
+    border: 1px solid var(--border); padding: 14px 16px;
+    position: relative;
+  }
+  .inst-card.teal { background: var(--card-teal); border-color: #2A5050; }
+  .inst-card-label {
+    font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+    color: var(--hero-xl); text-transform: uppercase; margin-bottom: 6px;
+  }
+  .inst-card.teal .inst-card-label { color: #6ABAAA; }
+  .inst-input {
+    background: transparent; border: none; outline: none;
+    font-size: 22px; font-family: var(--font-display); font-weight: bold;
+    color: var(--sand); width: 100%;
+  }
+  .inst-input::placeholder { color: var(--border); }
+
+  /* vozes */
+  .vozes-section {
+    background: var(--sage); border-radius: 10px;
+    border: 1px solid var(--sage-b); padding: 14px 16px;
+  }
+  .vozes-label { font-size: 9px; font-weight: 700; letter-spacing: 2px; color: var(--sage-b); text-transform: uppercase; margin-bottom: 10px; }
+  .vozes-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .voz-chip {
+    background: var(--sage-b); color: var(--sand);
+    border-radius: 6px; padding: 6px 14px; font-size: 13px;
+    font-family: var(--font-display); cursor: default;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .voz-chip .remove-voz {
+    cursor: pointer; color: var(--sage); font-size: 12px; font-weight: bold;
+    line-height: 1; background: none; border: none; padding: 0;
+  }
+  .voz-chip .remove-voz:hover { color: #ff8888; }
+  .add-voz-row { display: flex; gap: 8px; margin-top: 10px; }
+  .add-voz-input {
+    flex: 1; background: rgba(0,0,0,.2); border: 1px solid var(--sage-b);
+    border-radius: 6px; padding: 6px 12px; color: var(--sand);
+    font-size: 13px; outline: none;
+  }
+
+  /* ── ABA MEMBROS ── */
+  .membros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .membro-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+  }
+  .membro-nome { font-size: 15px; font-weight: 700; color: var(--sand); margin-bottom: 8px; }
+  .membro-funcoes { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+  .func-tag {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px;
+    background: var(--hero); color: var(--white);
+  }
+  .func-tag.teal { background: #2A6060; }
+  .func-tag.sage { background: var(--sage-b); }
+  .dispo-toggle {
+    width: 100%; padding: 6px; border-radius: 6px; font-size: 11px;
+    font-weight: 600; cursor: pointer; border: none; transition: all .15s;
+  }
+  .dispo-on  { background: #1a3a25; color: #4ade80; border: 1px solid #2a5a35; }
+  .dispo-off { background: #3a1a1a; color: #f87171; border: 1px solid #5a2a2a; }
+
+  /* ── EXPORTAR ── */
+  .export-section { max-width: 600px; }
+  .export-preview {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 16px;
+  }
+
+  /* ════════════════════════════════════════════════════════
+     CANVAS DE EXPORTAÇÃO (invisível, renderizado pelo html2canvas)
+  ════════════════════════════════════════════════════════ */
+  #export-canvas {
+    position: fixed; left: -9999px; top: 0;
+    width: 1280px; height: 720px;
+    background: #1A0A07;
+    font-family: Georgia, serif;
+    overflow: hidden;
+  }
+
+  .ec-bg { width: 100%; height: 100%; background: #1A0A07; position: relative; padding: 0; }
+
+  /* topo */
+  .ec-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 22px 36px 14px;
+    border-bottom: 1px solid #4A2820;
+  }
+  .ec-titulo { font-size: 46px; font-weight: bold; color: #F2E0D5; line-height: 1; }
+  .ec-sub { font-size: 13px; color: #9A7060; margin-top: 6px; letter-spacing: 0.5px; font-family: 'Segoe UI', sans-serif; }
+  .ec-mes { font-size: 50px; font-weight: bold; font-style: italic; color: #C97B63; line-height: 1; text-align: right; }
+  .ec-mes-sub { font-size: 12px; color: #9A7060; text-align: right; letter-spacing: 1px; font-family: 'Segoe UI', sans-serif; margin-top: 4px; }
+
+  /* corpo */
+  .ec-body { display: flex; gap: 0; padding: 18px 36px; height: calc(100% - 104px); }
+
+  /* hero */
+  .ec-hero {
+    flex: 0 0 760px;
+    background: #A0453A; border-radius: 14px;
+    padding: 18px 20px 16px;
+    display: flex; flex-direction: column; gap: 0;
+    margin-right: 20px;
+    position: relative; overflow: hidden;
+  }
+  .ec-badge {
+    position: absolute; top: 18px; left: 18px;
+    background: #D4A853; color: #1A0A07;
+    font-size: 11px; font-weight: bold; letter-spacing: 2px;
+    padding: 4px 12px; border-radius: 5px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .ec-dia { font-size: 120px; font-weight: bold; color: #F2E0D5; line-height: 1; margin-top: 6px; }
+  .ec-dia-info {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: -10px; margin-bottom: 10px; padding: 0 2px;
+  }
+  .ec-dia-label { font-size: 16px; font-weight: bold; letter-spacing: 3px; color: #F2E0D5; font-family: 'Segoe UI', sans-serif; }
+  .ec-horarios { display: flex; gap: 24px; }
+  .ec-hor-item { display: flex; align-items: baseline; gap: 6px; }
+  .ec-hor-label { font-size: 12px; color: #F2E0D5; font-family: 'Segoe UI', sans-serif; }
+  .ec-hor-val { font-size: 20px; font-weight: bold; color: #D4A853; }
+
+  /* cards instrumentos */
+  .ec-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .ec-card {
+    background: #2B1410; border-radius: 8px;
+    border: 1px solid rgba(160,90,60,.3); padding: 10px 14px;
+  }
+  .ec-card.tl { background: #1E3030; border-color: rgba(70,140,120,.3); }
+  .ec-card-lbl { font-size: 9px; font-weight: bold; letter-spacing: 2px; color: #D4937E; font-family: 'Segoe UI', sans-serif; }
+  .ec-card.tl .ec-card-lbl { color: #6ABAAA; }
+  .ec-card-nome { font-size: 24px; font-weight: bold; color: #F2E0D5; margin-top: 4px; }
+
+  /* vozes */
+  .ec-vozes {
+    background: #2E4E45; border-radius: 8px; border: 1px solid rgba(74,128,112,.4);
+    padding: 10px 14px; margin-top: 8px;
+  }
+  .ec-vozes-lbl { font-size: 9px; font-weight: bold; letter-spacing: 2px; color: #4A8070; font-family: 'Segoe UI', sans-serif; margin-bottom: 6px; }
+  .ec-vozes-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ec-voz-chip { background: #4A8070; color: #F2E0D5; padding: 5px 14px; border-radius: 5px; font-size: 14px; }
+
+  /* próximas semanas */
+  .ec-proximas { flex: 1; display: flex; flex-direction: column; }
+  .ec-prox-titulo { font-size: 10px; font-weight: bold; letter-spacing: 3px; color: #9A7060; font-family: 'Segoe UI', sans-serif; margin-bottom: 10px; }
+  .ec-prox-cards { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .ec-prox-card {
+    background: #2A1510; border: 1px solid #4A2820;
+    border-radius: 10px; padding: 10px 14px;
+    flex: 1; display: flex; gap: 12px; align-items: center;
+  }
+  .ec-prox-dia { font-size: 44px; font-weight: bold; color: #B85042; line-height: 1; min-width: 64px; }
+  .ec-prox-insts { flex: 1; }
+  .ec-prox-row { display: grid; grid-template-columns: 32px 1fr 32px 1fr; gap: 2px 4px; margin-bottom: 2px; }
+  .ec-prox-lbl { font-size: 9px; font-weight: bold; color: #9A7060; font-family: 'Segoe UI', sans-serif; line-height: 20px; }
+  .ec-prox-val { font-size: 14px; color: #F2E0D5; line-height: 20px; }
+  .ec-prox-voz { font-size: 9px; color: #9A7060; font-family: 'Segoe UI', sans-serif; margin-top: 3px; }
+
+  /* rodapé */
+  .ec-footer {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid #4A2820; padding: 7px 36px;
+    display: flex; justify-content: space-between; align-items: center;
+    background: #120705;
+  }
+  .ec-footer-aviso { font-size: 9px; color: #9A7060; font-family: 'Segoe UI', sans-serif; font-style: italic; }
+  .ec-footer-marca { font-size: 11px; font-weight: bold; color: #C97B63; }
+
+  /* ── MODAL ── */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; padding: 20px;
+  }
+  .modal {
+    background: #1E0C08; border: 1px solid var(--hero);
+    border-radius: 14px; padding: 28px; width: 100%; max-width: 440px;
+  }
+  .modal h3 { font-family: var(--font-display); font-size: 20px; color: var(--hero-l); margin-bottom: 20px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .field input, .field select {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--sand); padding: 9px 14px; font-size: 14px; outline: none;
+  }
+  .field input:focus, .field select:focus { border-color: var(--hero-l); }
+  .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+
+  /* empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty h3 { font-family: var(--font-display); font-size: 20px; color: var(--hero-l); margin-bottom: 8px; }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: #2A3A2A; border: 1px solid #4A8A4A; color: #90D890;
+    padding: 12px 20px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    z-index: 999; opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  hr.sec { border: none; border-top: 1px solid var(--border); margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<!-- ── APP HEADER ── -->
+<header class="app-header">
+  <div>
+    <div class="app-logo">Ministério de Louvor <span>Igreja Batista Memorial</span></div>
+  </div>
+  <nav class="app-nav">
+    <button class="nav-btn active" onclick="setAba('escala')">📅 Escala</button>
+    <button class="nav-btn" onclick="setAba('membros')">🎸 Membros</button>
+    <button class="nav-btn" onclick="setAba('exportar')">📤 Exportar</button>
+  </nav>
+</header>
+
+<div class="app-body">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section">
+      <div class="mes-nav">
+        <button onclick="mudarMes(-1)">‹</button>
+        <h2 id="label-mes">Julho 2026</h2>
+        <button onclick="mudarMes(1)">›</button>
+      </div>
+    </div>
+    <div class="sidebar-section" style="flex:1">
+      <div class="sidebar-title">Cultos do Mês</div>
+      <div id="lista-cultos"></div>
+      <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="abrirModalCulto()">+ Novo culto</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main" id="main-content">
+    <div class="empty" id="empty-state">
+      <h3>Selecione um culto</h3>
+      <p>Clique em um domingo na barra lateral para editar a escala.</p>
+    </div>
+    <div id="editor" style="display:none"></div>
+  </main>
+
+</div>
+
+<!-- ── CANVAS DE EXPORTAÇÃO (fora da tela) ── -->
+<div id="export-canvas"></div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── MODAL CULTO ── -->
+<div class="overlay" id="modal-culto" style="display:none" onclick="fecharModal('modal-culto')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Novo Culto</h3>
+    <div class="field"><label>Título</label><input id="mc-titulo" value="Culto Domingo Noite"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="field"><label>Data</label><input id="mc-data" type="date"></div>
+      <div class="field"><label>Horário Culto</label><input id="mc-culto" value="18h00"></div>
+    </div>
+    <div class="field"><label>Horário Ensaio</label><input id="mc-ensaio" value="17h15"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarCulto()">Salvar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-culto')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL MEMBRO ── -->
+<div class="overlay" id="modal-membro" style="display:none" onclick="fecharModal('modal-membro')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3>Novo Membro</h3>
+    <div class="field"><label>Nome</label><input id="mm-nome" placeholder="Nome completo..."></div>
+    <div class="field">
+      <label>Funções (selecione uma ou mais)</label>
+      <div id="mm-funcoes" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarMembro()">Salvar</button>
+      <button class="btn btn-ghost" onclick="fecharModal('modal-membro')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DADOS
+// ═══════════════════════════════════════════════════════════
+const FUNCOES = ["Bateria","Baixo","Violão","Guitarra","Teclado","Voz","Trompete"];
+const MESES_NOMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+                     "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+let state = {
+  mesAtual: { ano: 2026, mes: 6 }, // 0-indexed: 6 = julho
+  cultoSel: null,
+  aba: 'escala',
+
+  membros: [
+    { id:1,  nome:"Ramony",    funcoes:["Bateria","Baixo","Violão"],        disponivel:true  },
+    { id:2,  nome:"Felipe",    funcoes:["Bateria","Baixo"],                 disponivel:true  },
+    { id:3,  nome:"Guilherme", funcoes:["Bateria"],                         disponivel:true  },
+    { id:4,  nome:"Isabela",   funcoes:["Bateria","Baixo","Violão"],        disponivel:true  },
+    { id:5,  nome:"Rarisson",  funcoes:["Baixo","Violão","Guitarra"],       disponivel:true  },
+    { id:6,  nome:"Davi",      funcoes:["Baixo","Violão","Guitarra"],       disponivel:true  },
+    { id:7,  nome:"Victor",    funcoes:["Teclado"],                         disponivel:true  },
+    { id:8,  nome:"Sarah",     funcoes:["Teclado"],                         disponivel:true  },
+    { id:9,  nome:"Van",       funcoes:["Voz"],                             disponivel:true  },
+    { id:10, nome:"Marilda",   funcoes:["Voz"],                             disponivel:true  },
+    { id:11, nome:"Juliana",   funcoes:["Voz"],                             disponivel:true  },
+    { id:12, nome:"Rui",       funcoes:["Voz"],                             disponivel:true  },
+    { id:13, nome:"Robson",    funcoes:["Voz"],                             disponivel:true  },
+    { id:14, nome:"Monteiro",  funcoes:["Trompete"],                        disponivel:true  },
+  ],
+
+  cultos: [
+    { id:1, titulo:"Culto Domingo Noite", data:"2026-07-05", ensaio:"17h15", culto:"18h00",
+      bat:"Ramony", bai:"Isabela", vio:"Rarisson", gui:"Davi", tec:"Victor", trom:"Monteiro",
+      vozes:["Van","Marilda","Juliana","Rui","Robson"] },
+    { id:2, titulo:"Culto Domingo Noite", data:"2026-07-12", ensaio:"17h15", culto:"18h00",
+      bat:"Felipe", bai:"Ramony", vio:"Isabela", gui:"Rarisson", tec:"Sarah", trom:"Monteiro",
+      vozes:["Van","Marilda","Juliana","Rui","Robson"] },
+    { id:3, titulo:"Culto Domingo Noite", data:"2026-07-19", ensaio:"17h15", culto:"18h00",
+      bat:"Guilherme", bai:"Isabela", vio:"Ramony", gui:"Davi", tec:"Victor", trom:"Monteiro",
+      vozes:["Van","Marilda","Juliana","Rui","Robson"] },
+    { id:4, titulo:"Culto Domingo Noite", data:"2026-07-26", ensaio:"17h15", culto:"18h00",
+      bat:"Isabela", bai:"Felipe", vio:"Davi", gui:"Rarisson", tec:"Sarah", trom:"Monteiro",
+      vozes:["Van","Marilda","Juliana","Rui","Robson"] },
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function hoje() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function diaSemana(iso) {
+  const dias = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
+  return dias[new Date(iso+"T12:00:00").getDay()];
+}
+function fmtDia(iso) { return iso.split("-")[2]; }
+function fmtMes(iso) { return MESES_NOMES[parseInt(iso.split("-")[1])-1]; }
+function labelMes(a, m) { return `${MESES_NOMES[m]} ${a}`; }
+function cultosDoMes() {
+  const { ano, mes } = state.mesAtual;
+  const pref = `${ano}-${String(mes+1).padStart(2,'0')}`;
+  return state.cultos.filter(c => c.data.startsWith(pref)).sort((a,b) => a.data.localeCompare(b.data));
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function nextId() { return Math.max(0, ...state.cultos.map(c=>c.id)) + 1; }
+function nextMId() { return Math.max(0, ...state.membros.map(m=>m.id)) + 1; }
+
+// ═══════════════════════════════════════════════════════════
+// RENDER SIDEBAR
+// ═══════════════════════════════════════════════════════════
+function renderSidebar() {
+  document.getElementById('label-mes').textContent = labelMes(state.mesAtual.ano, state.mesAtual.mes);
+  const lista = document.getElementById('lista-cultos');
+  const cultos = cultosDoMes();
+  const hj = hoje();
+
+  if (!cultos.length) {
+    lista.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px 0">Nenhum culto neste mês</div>';
+    return;
+  }
+
+  lista.innerHTML = cultos.map(c => {
+    const isHoje = c.data === hj;
+    const sel = state.cultoSel === c.id;
+    const vazio = !c.bat && !c.bai;
+    return `
+    <div class="culto-item ${sel?'selected':''} ${isHoje?'hoje':''}" onclick="selecionarCulto(${c.id})">
+      <div class="culto-dia">${fmtDia(c.data)}</div>
+      <div class="culto-info">
+        <div class="culto-info-titulo">${c.titulo}</div>
+        <div class="culto-info-sub">${diaSemana(c.data)} · ${fmtMes(c.data)} · ${c.culto||'--'}</div>
+      </div>
+      ${isHoje ? '<span class="badge-hoje">HOJE</span>' : ''}
+      ${vazio && !isHoje ? '<span class="badge-vazio">vazio</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER EDITOR
+// ═══════════════════════════════════════════════════════════
+function renderEditor() {
+  const culto = state.cultos.find(c => c.id === state.cultoSel);
+  if (!culto) { showEmpty(); return; }
+
+  document.getElementById('empty-state').style.display = 'none';
+  const ed = document.getElementById('editor');
+  ed.style.display = 'flex';
+  ed.style.flexDirection = 'column';
+  ed.style.gap = '18px';
+
+  const membrosDisp = state.membros.filter(m => m.disponivel);
+  const opts = (funcao) => {
+    const lista = membrosDisp.filter(m => m.funcoes.includes(funcao));
+    return `<option value="">— selecionar —</option>` +
+      lista.map(m => `<option value="${m.nome}" ${culto[funcaoKey(funcao)]===m.nome?'selected':''}>${m.nome}</option>`).join('');
+  };
+
+  ed.innerHTML = `
+    <!-- cabeçalho -->
+    <div class="editor-header">
+      <div>
+        <div class="editor-titulo">${diaSemana(culto.data)}, ${fmtDia(culto.data)} de ${fmtMes(culto.data)}</div>
+        <div class="editor-sub">${culto.titulo}</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-danger" onclick="excluirCulto(${culto.id})">🗑 Excluir</button>
+        <button class="btn btn-gold" onclick="exportarImagem()">⬇ Exportar Imagem</button>
+      </div>
+    </div>
+
+    <!-- horários -->
+    <div class="horarios-row">
+      <div class="horario-box">
+        <div class="horario-label">Horário de Ensaio</div>
+        <input class="horario-input" value="${culto.ensaio||''}" placeholder="17h15"
+          onchange="updateCulto(${culto.id},'ensaio',this.value)">
+      </div>
+      <div class="horario-box">
+        <div class="horario-label">Horário do Culto</div>
+        <input class="horario-input" value="${culto.culto||''}" placeholder="18h00"
+          onchange="updateCulto(${culto.id},'culto',this.value)">
+      </div>
+    </div>
+
+    <!-- instrumentos -->
+    <div>
+      <div class="sidebar-title" style="margin-bottom:10px">Instrumentistas</div>
+      <div class="inst-grid">
+        ${instCard(culto,'bat','Bateria',false)}
+        ${instCard(culto,'bai','Baixo',true)}
+        ${instCard(culto,'vio','Violão',false)}
+        ${instCard(culto,'gui','Guitarra',true)}
+        ${instCard(culto,'tec','Teclado',false)}
+        ${instCard(culto,'trom','Trompete',true)}
+      </div>
+    </div>
+
+    <!-- vozes -->
+    <div class="vozes-section">
+      <div class="vozes-label">Vozes</div>
+      <div class="vozes-chips" id="vozes-chips">
+        ${(culto.vozes||[]).map((v,i) => `
+          <div class="voz-chip">
+            ${v}
+            <button class="remove-voz" onclick="removeVoz(${culto.id},${i})">✕</button>
+          </div>`).join('')}
+      </div>
+      <div class="add-voz-row">
+        <select class="add-voz-input" id="select-voz">
+          <option value="">+ Adicionar voz...</option>
+          ${state.membros.filter(m=>m.funcoes.includes('Voz')&&m.disponivel).map(m=>`<option value="${m.nome}">${m.nome}</option>`).join('')}
+        </select>
+        <button class="btn btn-ghost" onclick="addVoz(${culto.id})">Adicionar</button>
+      </div>
+    </div>
+  `;
+}
+
+function instCard(culto, key, label, teal) {
+  const membrosDisp = state.membros.filter(m => m.disponivel && m.funcoes.includes(label));
+  const optsHtml = `<option value="">— —</option>` +
+    membrosDisp.map(m => `<option value="${m.nome}" ${culto[key]===m.nome?'selected':''}>${m.nome}</option>`).join('');
+  return `
+    <div class="inst-card ${teal?'teal':''}">
+      <div class="inst-card-label">${label}</div>
+      <select class="inst-input" onchange="updateCulto(${culto.id},'${key}',this.value)"
+        style="appearance:none;cursor:pointer">
+        ${optsHtml}
+      </select>
+    </div>`;
+}
+
+function funcaoKey(f) {
+  return {Bateria:'bat',Baixo:'bai',Violão:'vio',Guitarra:'gui',Teclado:'tec',Trompete:'trom'}[f]||'bat';
+}
+
+function showEmpty() {
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('editor').style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER MEMBROS
+// ═══════════════════════════════════════════════════════════
+function renderMembros() {
+  const ed = document.getElementById('editor');
+  ed.style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+
+  const corFuncao = f => ({
+    'Bateria':'','Baixo':'teal','Violão':'','Guitarra':'teal','Teclado':'sage','Voz':'sage','Trompete':''
+  }[f]||'');
+
+  ed.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div class="editor-titulo" style="font-size:22px">Equipe do Ministério</div>
+      <button class="btn btn-primary" onclick="abrirModalMembro()">+ Novo Membro</button>
+    </div>
+    <div class="membros-grid">
+      ${state.membros.map(m => `
+        <div class="membro-card">
+          <div class="membro-nome">${m.nome}</div>
+          <div class="membro-funcoes">
+            ${m.funcoes.map(f=>`<span class="func-tag ${corFuncao(f)}">${f}</span>`).join('')}
+          </div>
+          <button class="dispo-toggle ${m.disponivel?'dispo-on':'dispo-off'}"
+            onclick="toggleDispo(${m.id})">
+            ${m.disponivel ? '✓ Disponível' : '✗ Indisponível'}
+          </button>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER EXPORTAR
+// ═══════════════════════════════════════════════════════════
+function renderExportar() {
+  const ed = document.getElementById('editor');
+  ed.style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+  const cultos = cultosDoMes();
+
+  ed.innerHTML = `
+    <div class="editor-titulo" style="font-size:22px">Exportar Escala</div>
+    <div class="export-section">
+      <div class="export-preview">
+        <div class="sidebar-title" style="margin-bottom:10px">Selecione o domingo em destaque</div>
+        ${cultos.map(c=>`
+          <div class="culto-item ${state.cultoSel===c.id?'selected':''}" onclick="selecionarCulto(${c.id});renderExportar()">
+            <div class="culto-dia">${fmtDia(c.data)}</div>
+            <div class="culto-info">
+              <div class="culto-info-titulo">${c.titulo}</div>
+              <div class="culto-info-sub">${diaSemana(c.data)} · ${fmtMes(c.data)}</div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-gold" style="flex:1" onclick="exportarImagem()">⬇ Exportar como Imagem (PNG)</button>
+      </div>
+      <p style="margin-top:12px;font-size:11px;color:var(--muted)">
+        A imagem exportada tem o layout visual da escala com o domingo selecionado em destaque e os demais como "Próximas Semanas". Ideal para enviar no grupo do WhatsApp.
+      </p>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// AÇÕES
+// ═══════════════════════════════════════════════════════════
+function setAba(aba) {
+  state.aba = aba;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (aba === 'escala') {
+    document.getElementById('sidebar').style.display = 'flex';
+    if (state.cultoSel) renderEditor(); else showEmpty();
+  } else if (aba === 'membros') {
+    document.getElementById('sidebar').style.display = 'none';
+    renderMembros();
+  } else if (aba === 'exportar') {
+    document.getElementById('sidebar').style.display = 'flex';
+    renderExportar();
+  }
+}
+
+function mudarMes(dir) {
+  let { ano, mes } = state.mesAtual;
+  mes += dir;
+  if (mes < 0)  { mes = 11; ano--; }
+  if (mes > 11) { mes = 0;  ano++; }
+  state.mesAtual = { ano, mes };
+  state.cultoSel = null;
+  renderSidebar();
+  showEmpty();
+}
+
+function selecionarCulto(id) {
+  state.cultoSel = id;
+  renderSidebar();
+  if (state.aba === 'escala') renderEditor();
+}
+
+function updateCulto(id, campo, valor) {
+  const c = state.cultos.find(c => c.id === id);
+  if (c) { c[campo] = valor; renderSidebar(); }
+}
+
+function addVoz(cultoId) {
+  const sel = document.getElementById('select-voz');
+  const nome = sel.value;
+  if (!nome) return;
+  const c = state.cultos.find(c=>c.id===cultoId);
+  if (c && !c.vozes.includes(nome)) {
+    c.vozes.push(nome);
+    renderEditor();
+    showToast(`${nome} adicionado(a) às vozes`);
+  }
+}
+
+function removeVoz(cultoId, idx) {
+  const c = state.cultos.find(c=>c.id===cultoId);
+  if (c) { c.vozes.splice(idx,1); renderEditor(); }
+}
+
+function excluirCulto(id) {
+  if (!confirm('Excluir este culto?')) return;
+  state.cultos = state.cultos.filter(c=>c.id!==id);
+  state.cultoSel = null;
+  renderSidebar();
+  showEmpty();
+  showToast('Culto removido');
+}
+
+function toggleDispo(id) {
+  const m = state.membros.find(m=>m.id===id);
+  if (m) { m.disponivel = !m.disponivel; renderMembros(); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// MODAIS
+// ═══════════════════════════════════════════════════════════
+function abrirModalCulto() {
+  document.getElementById('modal-culto').style.display = 'flex';
+}
+function fecharModal(id) { document.getElementById(id).style.display = 'none'; }
+
+function salvarCulto() {
+  const titulo = document.getElementById('mc-titulo').value.trim();
+  const data   = document.getElementById('mc-data').value;
+  const culto  = document.getElementById('mc-culto').value;
+  const ensaio = document.getElementById('mc-ensaio').value;
+  if (!titulo || !data) { alert('Preencha título e data.'); return; }
+  const novo = { id:nextId(), titulo, data, culto, ensaio,
+    bat:'', bai:'', vio:'', gui:'', tec:'', trom:'', vozes:[] };
+  state.cultos.push(novo);
+  fecharModal('modal-culto');
+  // navegar ao mês
+  const [a,m] = data.split('-');
+  state.mesAtual = { ano:parseInt(a), mes:parseInt(m)-1 };
+  state.cultoSel = novo.id;
+  renderSidebar();
+  renderEditor();
+  showToast('Culto criado!');
+}
+
+let mmFuncoesSel = [];
+function abrirModalMembro() {
+  mmFuncoesSel = [];
+  document.getElementById('mm-nome').value = '';
+  const cont = document.getElementById('mm-funcoes');
+  cont.innerHTML = FUNCOES.map(f => `
+    <div onclick="toggleFuncaoMM('${f}',this)"
+      style="padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;
+             background:var(--bg2);color:var(--muted);border:1px solid var(--border);transition:all .15s"
+      data-f="${f}">${f}</div>`).join('');
+  document.getElementById('modal-membro').style.display = 'flex';
+}
+function toggleFuncaoMM(f, el) {
+  if (mmFuncoesSel.includes(f)) {
+    mmFuncoesSel = mmFuncoesSel.filter(x=>x!==f);
+    el.style.background = 'var(--bg2)'; el.style.color = 'var(--muted)'; el.style.borderColor = 'var(--border)';
+  } else {
+    mmFuncoesSel.push(f);
+    el.style.background = 'var(--hero)'; el.style.color = 'var(--white)'; el.style.borderColor = 'var(--hero)';
+  }
+}
+function salvarMembro() {
+  const nome = document.getElementById('mm-nome').value.trim();
+  if (!nome || !mmFuncoesSel.length) { alert('Preencha nome e selecione ao menos uma função.'); return; }
+  state.membros.push({ id:nextMId(), nome, funcoes:[...mmFuncoesSel], disponivel:true });
+  fecharModal('modal-membro');
+  renderMembros();
+  showToast(`${nome} adicionado(a)!`);
+}
+
+// ═══════════════════════════════════════════════════════════
+// EXPORTAR IMAGEM
+// ═══════════════════════════════════════════════════════════
+function exportarImagem() {
+  const cultos = cultosDoMes().sort((a,b)=>a.data.localeCompare(b.data));
+  if (!cultos.length) { alert('Nenhum culto neste mês para exportar.'); return; }
+
+  // culto em destaque: o selecionado ou o primeiro
+  const hero = state.cultoSel
+    ? (cultos.find(c=>c.id===state.cultoSel) || cultos[0])
+    : cultos[0];
+  const proximas = cultos.filter(c=>c.id !== hero.id);
+  const mes = labelMes(state.mesAtual.ano, state.mesAtual.mes);
+
+  // monta o HTML do canvas de exportação
+  const canvas = document.getElementById('export-canvas');
+  canvas.innerHTML = `
+<div class="ec-bg">
+  <!-- header -->
+  <div class="ec-header">
+    <div>
+      <div class="ec-titulo">Escala</div>
+      <div class="ec-sub">Louvor & Adoração  ·  Igreja Batista Memorial</div>
+    </div>
+    <div>
+      <div class="ec-mes">${mes}</div>
+      <div class="ec-mes-sub">Domingo à Noite</div>
+    </div>
+  </div>
+
+  <!-- body -->
+  <div class="ec-body">
+
+    <!-- hero -->
+    <div class="ec-hero">
+      <div class="ec-badge">PRÓXIMO</div>
+      <div class="ec-dia">${fmtDia(hero.data)}</div>
+      <div class="ec-dia-info">
+        <div class="ec-dia-label">DOMINGO  ·  ${fmtMes(hero.data).toUpperCase()}</div>
+        <div class="ec-horarios">
+          <div class="ec-hor-item"><span class="ec-hor-label">Ensaio</span><span class="ec-hor-val">${hero.ensaio||'--'}</span></div>
+          <div class="ec-hor-item"><span class="ec-hor-label">Culto</span><span class="ec-hor-val">${hero.culto||'--'}</span></div>
+        </div>
+      </div>
+
+      <div class="ec-cards">
+        <div class="ec-card">
+          <div class="ec-card-lbl">BATERIA</div>
+          <div class="ec-card-nome">${hero.bat||'—'}</div>
+        </div>
+        <div class="ec-card tl">
+          <div class="ec-card-lbl">BAIXO</div>
+          <div class="ec-card-nome">${hero.bai||'—'}</div>
+        </div>
+        <div class="ec-card">
+          <div class="ec-card-lbl">VIOLÃO</div>
+          <div class="ec-card-nome">${hero.vio||'—'}</div>
+        </div>
+        <div class="ec-card tl">
+          <div class="ec-card-lbl">GUITARRA</div>
+          <div class="ec-card-nome">${hero.gui||'—'}</div>
+        </div>
+        <div class="ec-card">
+          <div class="ec-card-lbl">TECLADO</div>
+          <div class="ec-card-nome">${hero.tec||'—'}</div>
+        </div>
+        <div class="ec-card tl">
+          <div class="ec-card-lbl">TROMPETE</div>
+          <div class="ec-card-nome">${hero.trom||'—'}</div>
+        </div>
+      </div>
+
+      <div class="ec-vozes">
+        <div class="ec-vozes-lbl">VOZES</div>
+        <div class="ec-vozes-chips">
+          ${(hero.vozes||[]).map(v=>`<div class="ec-voz-chip">${v}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- proximas -->
+    <div class="ec-proximas">
+      <div class="ec-prox-titulo">PRÓXIMAS SEMANAS</div>
+      <div class="ec-prox-cards">
+        ${proximas.map(d => `
+        <div class="ec-prox-card">
+          <div class="ec-prox-dia">${fmtDia(d.data)}</div>
+          <div class="ec-prox-insts">
+            <div class="ec-prox-row">
+              <span class="ec-prox-lbl">BAT</span><span class="ec-prox-val">${d.bat||'—'}</span>
+              <span class="ec-prox-lbl">BAI</span><span class="ec-prox-val">${d.bai||'—'}</span>
+            </div>
+            <div class="ec-prox-row">
+              <span class="ec-prox-lbl">VIO</span><span class="ec-prox-val">${d.vio||'—'}</span>
+              <span class="ec-prox-lbl">GUI</span><span class="ec-prox-val">${d.gui||'—'}</span>
+            </div>
+            <div class="ec-prox-row">
+              <span class="ec-prox-lbl">TEC</span><span class="ec-prox-val">${d.tec||'—'}</span>
+              <span class="ec-prox-lbl">TPT</span><span class="ec-prox-val">${d.trom||'—'}</span>
+            </div>
+            <div class="ec-prox-voz">VOZ  ${(d.vozes||[]).join(' · ')}</div>
+          </div>
+        </div>`).join('')}
+        ${proximas.length < 3 ? Array(3-proximas.length).fill('<div class="ec-prox-card" style="opacity:.2"><div class="ec-prox-dia">—</div></div>').join('') : ''}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- footer -->
+  <div class="ec-footer">
+    <div class="ec-footer-aviso">Informe indisponibilidade com até uma semana de antecedência  ·  Ministério de Louvor, Igreja Batista Memorial</div>
+    <div class="ec-footer-marca">memorial / igreja batista</div>
+  </div>
+</div>`;
+
+  showToast('Gerando imagem...');
+  setTimeout(() => {
+    html2canvas(canvas, {
+      width: 1280, height: 720,
+      scale: 1,
+      useCORS: true,
+      backgroundColor: '#1A0A07',
+      logging: false,
+    }).then(c => {
+      const link = document.createElement('a');
+      link.download = `escala-${hero.data}.png`;
+      link.href = c.toDataURL('image/png');
+      link.click();
+      showToast('✓ Imagem baixada!');
+    }).catch(() => {
+      showToast('Erro ao gerar imagem. Tente novamente.');
+    });
+  }, 200);
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+renderSidebar();
+// seleciona automaticamente o culto mais próximo de hoje
+const hj = hoje();
+const proxCulto = cultosDoMes().find(c => c.data >= hj) || cultosDoMes()[0];
+if (proxCulto) { state.cultoSel = proxCulto.id; renderSidebar(); renderEditor(); }
+</script>
+</body>
+</html>

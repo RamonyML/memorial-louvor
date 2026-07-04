@@ -1,0 +1,38 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.label {
+  font-size: 19px;
+  color: var(--text);
+  min-width: 150px;
+  text-align: center;
+}
+
+.arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease),
+    transform 0.2s var(--ease), background-color 0.2s var(--ease);
+}
+
+.arrow:hover {
+  border-color: var(--primary);
+  color: var(--primary-text);
+  background: var(--primary-light);
+  transform: scale(1.08);
+}
+
+.arrow:active {
+  transform: scale(0.96);
+}

@@ -1,0 +1,108 @@
+.wrap {
+  max-width: 560px;
+}
+
+.wrap h2 {
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+
+.sectionTitle {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.2s var(--ease), border-color 0.2s var(--ease),
+    transform 0.2s var(--ease);
+}
+
+.item:hover {
+  background: var(--surface-alt);
+  transform: translateX(2px);
+}
+
+.selected {
+  background: var(--primary-light);
+  border-color: var(--primary);
+}
+
+.dia {
+  font-size: 30px;
+  color: var(--primary);
+  min-width: 38px;
+}
+
+.titulo { font-size: 13px; font-weight: 600; }
+.sub { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+
+.nota {
+  margin-top: 14px;
+  font-size: 11.5px;
+  color: var(--text-faint);
+  line-height: 1.5;
+}
+
+.formatos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.formatoBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 12px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: border-color 0.2s var(--ease), color 0.2s var(--ease),
+    background-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.formatoBtn:hover {
+  border-color: var(--primary);
+  color: var(--primary-text);
+  transform: translateY(-1px);
+}
+
+.formatoSelected {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+
+.formatoHint {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-faint);
+}
