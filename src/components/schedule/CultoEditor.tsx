@@ -6,6 +6,7 @@ import { Button } from '../common/Button';
 import { Dropdown } from '../common/Dropdown';
 import { MaterialIcon } from '../icons/MaterialIcon';
 import { useSchedule } from '../../context/ScheduleContext';
+import { useToast } from '../../context/ToastContext';
 import { diaSemana, fmtDia, fmtMes } from '../../utils/date';
 import styles from './CultoEditor.module.css';
 
@@ -17,6 +18,7 @@ interface CultoEditorProps {
 
 export function CultoEditor({ culto }: CultoEditorProps) {
   const { membros, updateCulto, addVoz, removeVoz, deleteCulto } = useSchedule();
+  const { showToast } = useToast();
   const [novaVoz, setNovaVoz] = useState('');
 
   const disponiveis = membros.filter((m) => m.disponivel);
@@ -26,6 +28,17 @@ export function CultoEditor({ culto }: CultoEditorProps) {
     if (confirm('Excluir este culto? Esta ação não pode ser desfeita.')) {
       deleteCulto(culto.id);
     }
+  }
+
+  function handleInstrumentoChange(key: InstrumentoKey, nome: string) {
+    if (nome) {
+      const conflito = INSTRUMENTOS.find((k) => k !== key && culto[k] === nome);
+      if (conflito) {
+        showToast(`${nome} já está escalado(a) em ${INSTRUMENTO_FUNCAO[conflito]} neste culto.`);
+        return;
+      }
+    }
+    updateCulto(culto.id, { [key]: nome });
   }
 
   return (
@@ -72,7 +85,7 @@ export function CultoEditor({ culto }: CultoEditorProps) {
                   <Dropdown
                     variant="ghost"
                     value={culto[key]}
-                    onChange={(v) => updateCulto(culto.id, { [key]: v })}
+                    onChange={(v) => handleInstrumentoChange(key, v)}
                     options={opcoes.map((m) => ({ value: m.nome, label: m.nome }))}
                   />
                 </div>
