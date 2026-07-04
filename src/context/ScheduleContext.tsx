@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Culto, Membro, NovoCulto, NovoMembro } from '../data/types';
 import * as repo from '../data/repository';
+import { useAuth } from './AuthContext';
 
 interface ScheduleContextValue {
   membros: Membro[];
@@ -19,17 +20,18 @@ interface ScheduleContextValue {
 const ScheduleContext = createContext<ScheduleContextValue | null>(null);
 
 export function ScheduleProvider({ children }: { children: ReactNode }) {
+  const { isAdmin } = useAuth();
   const [membros, setMembros] = useState<Membro[]>([]);
   const [cultos, setCultos] = useState<Culto[]>([]);
   const [cultosProntos, setCultosProntos] = useState(false);
   const [membrosProntos, setMembrosProntos] = useState(false);
 
   useEffect(() => {
-    let ativo = true;
-    repo.seedSeVazio().finally(() => {
-      if (!ativo) return;
-    });
+    // só um admin autenticado tem permissão de escrita para popular o banco na primeira vez
+    if (isAdmin) repo.seedSeVazio();
+  }, [isAdmin]);
 
+  useEffect(() => {
     const unsubCultos = repo.subscribeCultos((c) => {
       setCultos(c);
       setCultosProntos(true);
@@ -40,7 +42,6 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      ativo = false;
       unsubCultos();
       unsubMembros();
     };
