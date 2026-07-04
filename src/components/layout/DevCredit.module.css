@@ -1,0 +1,29 @@
+.credito {
+  position: fixed;
+  right: 18px;
+  bottom: 14px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-sm);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-faint);
+  opacity: 0.85;
+  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+
+.credito:hover {
+  opacity: 1;
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+@media (max-width: 560px) {
+  .credito { display: none; }
+}

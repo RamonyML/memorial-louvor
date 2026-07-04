@@ -1,5 +1,5 @@
 .footer {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid rgba(var(--on-primary-rgb), 0.15);
   padding: 14px 32px 18px;
 }
 
@@ -13,10 +13,15 @@
   text-align: center;
 }
 
+/*
+  O rodapé fica sobre o fundo animado (que é sempre um degradê escuro
+  derivado do primary, em qualquer tema) — por isso usa "on-primary"
+  (sempre branco) em vez de --text, que muda de cor conforme o tema.
+*/
 .texto {
   font-size: 10.5px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: rgba(var(--on-primary-rgb), 0.8);
 }
 
 .texto p + p {
@@ -24,7 +29,7 @@
 }
 
 .texto strong {
-  color: var(--text);
+  color: var(--on-primary);
   font-weight: 600;
 }
 
@@ -32,13 +37,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-faint);
-  opacity: 0.6;
+  color: rgba(var(--on-primary-rgb), 0.7);
   transition: opacity 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
 .github:hover {
-  opacity: 1;
-  color: var(--primary-text);
+  color: var(--on-primary);
   transform: translateY(-2px);
 }

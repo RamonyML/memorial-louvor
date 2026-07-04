@@ -1,5 +1,6 @@
 import { Navigate, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { Header } from './Header';
+import { DevCredit } from './DevCredit';
 import { MaterialIcon } from '../icons/MaterialIcon';
 import { useAuth } from '../../context/AuthContext';
 import styles from './AdminLayout.module.css';
@@ -53,6 +54,7 @@ export function AdminLayout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      <DevCredit />
     </div>
   );
 }
