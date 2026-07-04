@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Culto, Membro, NovoCulto, NovoMembro } from '../data/types';
 import * as repo from '../data/repository';
 import { useAuth } from './AuthContext';
@@ -83,22 +83,19 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
     return repo.gerarDomingosDoMes(ano, mes, cultos.map((c) => c.data));
   }
 
-  const value = useMemo(
-    () => ({
-      membros,
-      cultos,
-      loading: !(cultosProntos && membrosProntos),
-      updateCulto,
-      addVoz,
-      removeVoz,
-      deleteCulto,
-      createCulto,
-      createMembro,
-      toggleDisponivel,
-      gerarDomingosDoMes,
-    }),
-    [membros, cultos, cultosProntos, membrosProntos]
-  );
+  const value: ScheduleContextValue = {
+    membros,
+    cultos,
+    loading: !(cultosProntos && membrosProntos),
+    updateCulto,
+    addVoz,
+    removeVoz,
+    deleteCulto,
+    createCulto,
+    createMembro,
+    toggleDisponivel,
+    gerarDomingosDoMes,
+  };
 
   return <ScheduleContext.Provider value={value}>{children}</ScheduleContext.Provider>;
 }
