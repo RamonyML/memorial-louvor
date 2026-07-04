@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ScheduleProvider } from './context/ScheduleContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
+import { WaveBackground } from './components/common/WaveBackground';
 import { AdminLayout } from './components/layout/AdminLayout';
 import { PublicSchedulePage } from './pages/PublicSchedulePage';
 import { AdminLoginPage } from './pages/AdminLoginPage';
@@ -20,6 +21,7 @@ function App() {
     <AuthProvider>
       <ScheduleProvider>
         <ToastProvider>
+          <WaveBackground />
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<PublicSchedulePage />} />

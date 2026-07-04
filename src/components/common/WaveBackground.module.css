@@ -1,0 +1,47 @@
+.wave {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(160deg, var(--primary) 0%, #7a352c 100%);
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.55);
+}
+
+.wave span {
+  content: '';
+  position: absolute;
+  width: 325vh;
+  height: 325vh;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -75%);
+  background: rgba(var(--bg-rgb), 1);
+}
+
+.wave span:nth-child(1) {
+  border-radius: 45%;
+  background: rgba(var(--bg-rgb), 0.9);
+  animation: girar 22s linear infinite;
+}
+
+.wave span:nth-child(2) {
+  border-radius: 40%;
+  background: rgba(var(--bg-rgb), 0.5);
+  animation: girar 30s linear infinite reverse;
+}
+
+.wave span:nth-child(3) {
+  border-radius: 42.5%;
+  background: rgba(20, 12, 18, 0.45);
+  animation: girar 40s linear infinite;
+}
+
+@keyframes girar {
+  0% { transform: translate(-50%, -75%) rotate(0deg); }
+  100% { transform: translate(-50%, -75%) rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave span { animation: none; }
+}
