@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '../components/layout/Header';
+import { PublicFooter } from '../components/layout/PublicFooter';
 import { MonthNav } from '../components/schedule/MonthNav';
 import { HeroCulto } from '../components/schedule/HeroCulto';
 import { ProximaSemanaCard } from '../components/schedule/ProximaSemanaCard';
@@ -74,6 +75,8 @@ export function PublicSchedulePage() {
             </aside>
           </div>
         )}
+
+        <PublicFooter />
       </main>
     </div>
   );

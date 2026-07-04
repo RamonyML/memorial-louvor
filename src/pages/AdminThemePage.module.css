@@ -90,3 +90,18 @@
   justify-content: center;
   box-shadow: var(--shadow-sm);
 }
+
+.tagAtual {
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-sm);
+}

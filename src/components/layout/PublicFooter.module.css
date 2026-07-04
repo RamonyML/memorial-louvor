@@ -1,0 +1,44 @@
+.footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 4px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.texto {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.texto p + p {
+  margin-top: 6px;
+}
+
+.texto strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.github {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-faint);
+  opacity: 0.6;
+  transition: opacity 0.2s var(--ease), color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.github:hover {
+  opacity: 1;
+  color: var(--primary-text);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 560px) {
+  .footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
