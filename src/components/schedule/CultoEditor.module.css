@@ -175,3 +175,8 @@
   flex: 1;
   min-width: 0;
 }
+
+@media (max-width: 560px) {
+  .instGrid { grid-template-columns: 1fr; }
+  .addVoz { flex-direction: column; }
+}
