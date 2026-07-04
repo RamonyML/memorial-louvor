@@ -23,7 +23,7 @@ export function AdminExportPage() {
   const hoje = new Date();
   const [mesAtual] = useState({ ano: hoje.getFullYear(), mes: hoje.getMonth() });
   const doMes = cultosDoMes(cultos, mesAtual.ano, mesAtual.mes);
-  const [selId, setSelId] = useState<number | null>(doMes[0]?.id ?? null);
+  const [selId, setSelId] = useState<string | null>(doMes[0]?.id ?? null);
   const [formato, setFormato] = useState<Formato>('paisagem');
   const [gerando, setGerando] = useState(false);
   const paisagemRef = useRef<HTMLDivElement>(null);

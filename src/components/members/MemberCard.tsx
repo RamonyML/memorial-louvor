@@ -14,7 +14,7 @@ const CORES: Partial<Record<Funcao, string>> = {
 
 interface MemberCardProps {
   membro: Membro;
-  onToggleDisponivel: (id: number) => void;
+  onToggleDisponivel: (id: string) => void;
 }
 
 export function MemberCard({ membro, onToggleDisponivel }: MemberCardProps) {

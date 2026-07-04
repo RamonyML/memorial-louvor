@@ -18,7 +18,8 @@ export const FUNCOES: Funcao[] = [
 ];
 
 export interface Membro {
-  id: number;
+  /** ID do documento no Firestore */
+  id: string;
   nome: string;
   funcoes: Funcao[];
   disponivel: boolean;
@@ -37,7 +38,8 @@ export const INSTRUMENTO_FUNCAO: Record<InstrumentoKey, Funcao> = {
 };
 
 export interface Culto {
-  id: number;
+  /** ID do documento no Firestore */
+  id: string;
   titulo: string;
   /** ISO yyyy-mm-dd */
   data: string;

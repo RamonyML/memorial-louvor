@@ -1,19 +1,18 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Culto, Membro, NovoCulto, NovoMembro } from '../data/types';
 import * as repo from '../data/repository';
-import { domingosDoMes } from '../utils/date';
 
 interface ScheduleContextValue {
   membros: Membro[];
   cultos: Culto[];
   loading: boolean;
-  updateCulto: (id: number, patch: Partial<Culto>) => void;
-  addVoz: (cultoId: number, nome: string) => void;
-  removeVoz: (cultoId: number, index: number) => void;
-  deleteCulto: (id: number) => void;
-  createCulto: (dados: NovoCulto) => Promise<Culto>;
-  createMembro: (dados: NovoMembro) => Promise<Membro>;
-  toggleDisponivel: (membroId: number) => void;
+  updateCulto: (id: string, patch: Partial<Culto>) => void;
+  addVoz: (cultoId: string, nome: string) => void;
+  removeVoz: (cultoId: string, nome: string) => void;
+  deleteCulto: (id: string) => void;
+  createCulto: (dados: NovoCulto) => Promise<{ id: string }>;
+  createMembro: (dados: NovoMembro) => Promise<{ id: string }>;
+  toggleDisponivel: (membroId: string) => void;
   gerarDomingosDoMes: (ano: number, mes: number) => Promise<number>;
 }
 
@@ -22,100 +21,72 @@ const ScheduleContext = createContext<ScheduleContextValue | null>(null);
 export function ScheduleProvider({ children }: { children: ReactNode }) {
   const [membros, setMembros] = useState<Membro[]>([]);
   const [cultos, setCultos] = useState<Culto[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cultosProntos, setCultosProntos] = useState(false);
+  const [membrosProntos, setMembrosProntos] = useState(false);
 
   useEffect(() => {
-    Promise.all([repo.listarMembros(), repo.listarCultos()]).then(([m, c]) => {
-      setMembros(m);
-      setCultos(c);
-      setLoading(false);
+    let ativo = true;
+    repo.seedSeVazio().finally(() => {
+      if (!ativo) return;
     });
+
+    const unsubCultos = repo.subscribeCultos((c) => {
+      setCultos(c);
+      setCultosProntos(true);
+    });
+    const unsubMembros = repo.subscribeMembros((m) => {
+      setMembros(m);
+      setMembrosProntos(true);
+    });
+
+    return () => {
+      ativo = false;
+      unsubCultos();
+      unsubMembros();
+    };
   }, []);
 
-  function updateCulto(id: number, patch: Partial<Culto>) {
-    setCultos((prev) => {
-      const next = prev.map((c) => (c.id === id ? { ...c, ...patch } : c));
-      repo.salvarCultos(next);
-      return next;
-    });
+  function updateCulto(id: string, patch: Partial<Culto>) {
+    repo.atualizarCulto(id, patch);
   }
 
-  function addVoz(cultoId: number, nome: string) {
-    setCultos((prev) => {
-      const next = prev.map((c) =>
-        c.id === cultoId && !c.vozes.includes(nome) ? { ...c, vozes: [...c.vozes, nome] } : c
-      );
-      repo.salvarCultos(next);
-      return next;
-    });
+  function addVoz(cultoId: string, nome: string) {
+    const culto = cultos.find((c) => c.id === cultoId);
+    if (culto && !culto.vozes.includes(nome)) repo.adicionarVoz(cultoId, nome);
   }
 
-  function removeVoz(cultoId: number, index: number) {
-    setCultos((prev) => {
-      const next = prev.map((c) =>
-        c.id === cultoId ? { ...c, vozes: c.vozes.filter((_, i) => i !== index) } : c
-      );
-      repo.salvarCultos(next);
-      return next;
-    });
+  function removeVoz(cultoId: string, nome: string) {
+    repo.removerVoz(cultoId, nome);
   }
 
-  function deleteCulto(id: number) {
-    setCultos((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      repo.salvarCultos(next);
-      return next;
-    });
+  function deleteCulto(id: string) {
+    repo.excluirCulto(id);
   }
 
   async function createCulto(dados: NovoCulto) {
-    const novo = await repo.criarCulto(dados);
-    setCultos((prev) => [...prev, novo]);
-    return novo;
+    const id = await repo.criarCulto(dados);
+    return { id };
   }
 
   async function createMembro(dados: NovoMembro) {
-    const novo = await repo.criarMembro(dados);
-    setMembros((prev) => [...prev, novo]);
-    return novo;
+    const id = await repo.criarMembro(dados);
+    return { id };
   }
 
-  /** Cria automaticamente um culto para cada domingo do mês que ainda não existe. */
+  function toggleDisponivel(membroId: string) {
+    const membro = membros.find((m) => m.id === membroId);
+    if (membro) repo.atualizarDisponibilidade(membroId, !membro.disponivel);
+  }
+
   async function gerarDomingosDoMes(ano: number, mes: number) {
-    const existentes = new Set(cultos.map((c) => c.data));
-    const faltantes = domingosDoMes(ano, mes).filter((data) => !existentes.has(data));
-    if (faltantes.length === 0) return 0;
-
-    let proximoId = Math.max(0, ...cultos.map((c) => c.id));
-    const novos: Culto[] = faltantes.map((data) => ({
-      id: ++proximoId,
-      titulo: 'Culto Domingo Noite',
-      data,
-      ensaio: '17h15',
-      culto: '18h00',
-      bat: '', bai: '', vio: '', gui: '', tec: '', trom: '',
-      vozes: [],
-    }));
-
-    const next = [...cultos, ...novos];
-    setCultos(next);
-    await repo.salvarCultos(next);
-    return novos.length;
-  }
-
-  function toggleDisponivel(membroId: number) {
-    setMembros((prev) => {
-      const next = prev.map((m) => (m.id === membroId ? { ...m, disponivel: !m.disponivel } : m));
-      repo.salvarMembros(next);
-      return next;
-    });
+    return repo.gerarDomingosDoMes(ano, mes, cultos.map((c) => c.data));
   }
 
   const value = useMemo(
     () => ({
       membros,
       cultos,
-      loading,
+      loading: !(cultosProntos && membrosProntos),
       updateCulto,
       addVoz,
       removeVoz,
@@ -125,7 +96,7 @@ export function ScheduleProvider({ children }: { children: ReactNode }) {
       toggleDisponivel,
       gerarDomingosDoMes,
     }),
-    [membros, cultos, loading]
+    [membros, cultos, cultosProntos, membrosProntos]
   );
 
   return <ScheduleContext.Provider value={value}>{children}</ScheduleContext.Provider>;

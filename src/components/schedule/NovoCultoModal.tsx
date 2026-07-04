@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext';
 
 interface NovoCultoModalProps {
   onClose: () => void;
-  onCriado: (id: number) => void;
+  onCriado: (id: string) => void;
 }
 
 export function NovoCultoModal({ onClose, onCriado }: NovoCultoModalProps) {

@@ -1,41 +1,49 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
-
-const SESSION_KEY = 'escala-louvor:admin-auth';
-
-/**
- * Senha da área gerencial. Configurável via variável de ambiente
- * VITE_ADMIN_PASSWORD (crie um arquivo .env local — veja .env.example).
- * Isto é apenas uma trava temporária no front-end; quando houver backend,
- * a autenticação real substitui este mecanismo.
- */
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'louvor2026';
+import {
+  GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User,
+} from 'firebase/auth';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { ADMIN_EMAILS, auth } from '../firebase/config';
 
 interface AuthContextValue {
+  user: User | null;
+  /** true só se o usuário estiver logado E o e-mail estiver em ADMIN_EMAILS */
   isAdmin: boolean;
-  login: (senha: string) => boolean;
-  logout: () => void;
+  /** logado com Google, mas fora da lista de e-mails autorizados */
+  acessoNegado: boolean;
+  loading: boolean;
+  loginComGoogle: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAdmin, setIsAdmin] = useState(() => sessionStorage.getItem(SESSION_KEY) === '1');
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  function login(senha: string) {
-    if (senha === ADMIN_PASSWORD) {
-      sessionStorage.setItem(SESSION_KEY, '1');
-      setIsAdmin(true);
-      return true;
-    }
-    return false;
+  useEffect(() => {
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
+  }, []);
+
+  async function loginComGoogle() {
+    await signInWithPopup(auth, new GoogleAuthProvider());
   }
 
-  function logout() {
-    sessionStorage.removeItem(SESSION_KEY);
-    setIsAdmin(false);
+  async function logout() {
+    await signOut(auth);
   }
 
-  return <AuthContext.Provider value={{ isAdmin, login, logout }}>{children}</AuthContext.Provider>;
+  const isAdmin = !!user && ADMIN_EMAILS.includes(user.email ?? '');
+  const acessoNegado = !!user && !isAdmin;
+
+  return (
+    <AuthContext.Provider value={{ user, isAdmin, acessoNegado, loading, loginComGoogle, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

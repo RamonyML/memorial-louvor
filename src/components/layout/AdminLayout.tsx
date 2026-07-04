@@ -11,9 +11,10 @@ const TABS = [
 ];
 
 export function AdminLayout() {
-  const { isAdmin, logout } = useAuth();
+  const { isAdmin, loading, logout } = useAuth();
   const navigate = useNavigate();
 
+  if (loading) return null;
   if (!isAdmin) return <Navigate to="/admin" replace />;
 
   function sair() {

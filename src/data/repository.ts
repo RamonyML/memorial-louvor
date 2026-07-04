@@ -1,68 +1,90 @@
+import {
+  collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc,
+  arrayUnion, arrayRemove, writeBatch, getDocs, type Unsubscribe,
+} from 'firebase/firestore';
+import { db } from '../firebase/config';
 import type { Culto, Membro, NovoCulto, NovoMembro } from './types';
 import { SEED_CULTOS, SEED_MEMBROS } from './seed';
+import { domingosDoMes } from '../utils/date';
 
 /**
- * Camada de acesso a dados. Hoje persiste em localStorage; a ideia é que,
- * quando houver backend/banco, apenas esta implementação troque (as telas
- * já consomem tudo por aqui, de forma assíncrona).
+ * Camada de acesso a dados — Firestore. As telas não sabem que o banco
+ * é o Firestore; se um dia trocar de backend, só este arquivo muda.
  */
 
-const KEYS = {
-  membros: 'escala-louvor:membros',
-  cultos: 'escala-louvor:cultos',
-};
+const cultosCol = collection(db, 'cultos');
+const membrosCol = collection(db, 'membros');
 
-function readStorage<T>(key: string, fallback: T): T {
-  const raw = localStorage.getItem(key);
-  if (!raw) return fallback;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
-  }
-}
+// ── SEED (roda uma vez, só se o banco estiver vazio) ────────────
+export async function seedSeVazio(): Promise<void> {
+  const [cSnap, mSnap] = await Promise.all([getDocs(cultosCol), getDocs(membrosCol)]);
+  if (!cSnap.empty || !mSnap.empty) return;
 
-function writeStorage<T>(key: string, value: T) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-function nextId(items: { id: number }[]): number {
-  return Math.max(0, ...items.map((i) => i.id)) + 1;
+  const batch = writeBatch(db);
+  SEED_MEMBROS.forEach((m) => batch.set(doc(membrosCol), m));
+  SEED_CULTOS.forEach((c) => batch.set(doc(cultosCol), c));
+  await batch.commit();
 }
 
 // ── MEMBROS ──────────────────────────────────────────────────
-export async function listarMembros(): Promise<Membro[]> {
-  return readStorage(KEYS.membros, SEED_MEMBROS);
+export function subscribeMembros(cb: (membros: Membro[]) => void): Unsubscribe {
+  return onSnapshot(membrosCol, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Membro));
+  });
 }
 
-export async function salvarMembros(membros: Membro[]): Promise<void> {
-  writeStorage(KEYS.membros, membros);
+export async function criarMembro(dados: NovoMembro): Promise<string> {
+  const ref = await addDoc(membrosCol, dados);
+  return ref.id;
 }
 
-export async function criarMembro(dados: NovoMembro): Promise<Membro> {
-  const membros = await listarMembros();
-  const novo: Membro = { id: nextId(membros), ...dados };
-  await salvarMembros([...membros, novo]);
-  return novo;
+export async function atualizarDisponibilidade(id: string, disponivel: boolean): Promise<void> {
+  await updateDoc(doc(db, 'membros', id), { disponivel });
 }
 
 // ── CULTOS ───────────────────────────────────────────────────
-export async function listarCultos(): Promise<Culto[]> {
-  return readStorage(KEYS.cultos, SEED_CULTOS);
+export function subscribeCultos(cb: (cultos: Culto[]) => void): Unsubscribe {
+  return onSnapshot(cultosCol, (snap) => {
+    cb(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Culto));
+  });
 }
 
-export async function salvarCultos(cultos: Culto[]): Promise<void> {
-  writeStorage(KEYS.cultos, cultos);
+export async function criarCulto(dados: NovoCulto): Promise<string> {
+  const ref = await addDoc(cultosCol, {
+    ...dados, bat: '', bai: '', vio: '', gui: '', tec: '', trom: '', vozes: [],
+  });
+  return ref.id;
 }
 
-export async function criarCulto(dados: NovoCulto): Promise<Culto> {
-  const cultos = await listarCultos();
-  const novo: Culto = {
-    id: nextId(cultos),
-    ...dados,
-    bat: '', bai: '', vio: '', gui: '', tec: '', trom: '',
-    vozes: [],
-  };
-  await salvarCultos([...cultos, novo]);
-  return novo;
+export async function atualizarCulto(id: string, patch: Partial<Culto>): Promise<void> {
+  const { id: _ignorado, ...campos } = patch;
+  await updateDoc(doc(db, 'cultos', id), campos);
+}
+
+export async function excluirCulto(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'cultos', id));
+}
+
+export async function adicionarVoz(cultoId: string, nome: string): Promise<void> {
+  await updateDoc(doc(db, 'cultos', cultoId), { vozes: arrayUnion(nome) });
+}
+
+export async function removerVoz(cultoId: string, nome: string): Promise<void> {
+  await updateDoc(doc(db, 'cultos', cultoId), { vozes: arrayRemove(nome) });
+}
+
+/** Cria um culto para cada domingo do mês que ainda não existir (datasExistentes já vem do estado atual). */
+export async function gerarDomingosDoMes(ano: number, mes: number, datasExistentes: string[]): Promise<number> {
+  const faltantes = domingosDoMes(ano, mes).filter((data) => !datasExistentes.includes(data));
+  if (faltantes.length === 0) return 0;
+
+  const batch = writeBatch(db);
+  faltantes.forEach((data) => {
+    batch.set(doc(cultosCol), {
+      titulo: 'Culto Domingo Noite', data, ensaio: '17h15', culto: '18h00',
+      bat: '', bai: '', vio: '', gui: '', tec: '', trom: '', vozes: [],
+    });
+  });
+  await batch.commit();
+  return faltantes.length;
 }

@@ -13,7 +13,7 @@ export function AdminSchedulePage() {
   const { showToast } = useToast();
   const hoje = new Date();
   const [mesAtual, setMesAtual] = useState({ ano: hoje.getFullYear(), mes: hoje.getMonth() });
-  const [cultoSelId, setCultoSelId] = useState<number | null>(null);
+  const [cultoSelId, setCultoSelId] = useState<string | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
   const [inicializado, setInicializado] = useState(false);
 

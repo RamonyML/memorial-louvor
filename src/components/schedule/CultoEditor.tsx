@@ -88,10 +88,10 @@ export function CultoEditor({ culto }: CultoEditorProps) {
           <div className={styles.sectionTitle}>Vozes</div>
         </div>
         <div className={styles.chips}>
-          {culto.vozes.map((v, i) => (
+          {culto.vozes.map((v) => (
             <div className={styles.chip} key={v}>
               {v}
-              <button onClick={() => removeVoz(culto.id, i)} aria-label={`Remover ${v}`}>
+              <button onClick={() => removeVoz(culto.id, v)} aria-label={`Remover ${v}`}>
                 <MaterialIcon name="close" size={14} />
               </button>
             </div>

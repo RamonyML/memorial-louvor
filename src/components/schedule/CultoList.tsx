@@ -8,9 +8,9 @@ interface CultoListProps {
   cultos: Culto[];
   ano: number;
   mes: number;
-  selecionadoId: number | null;
+  selecionadoId: string | null;
   onMudarMes: (ano: number, mes: number) => void;
-  onSelecionar: (id: number) => void;
+  onSelecionar: (id: string) => void;
   onNovo: () => void;
   onGerarDomingos: () => void;
 }
