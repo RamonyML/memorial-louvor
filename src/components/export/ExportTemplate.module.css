@@ -65,7 +65,7 @@
   padding: 18px 20px 16px;
   position: relative;
   overflow: hidden;
-  color: var(--text);
+  color: var(--on-primary);
 }
 
 .badge {
@@ -73,7 +73,7 @@
   top: 18px;
   left: 18px;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 2px;
@@ -83,7 +83,7 @@
 
 .dia {
   font-size: 120px;
-  color: var(--text);
+  color: var(--on-primary);
   line-height: 1;
   margin-top: 6px;
 }
@@ -101,7 +101,7 @@
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: var(--text);
+  color: var(--on-primary);
 }
 
 .horarios { display: flex; gap: 24px; }
@@ -111,7 +111,7 @@
   align-items: baseline;
   gap: 6px;
   font-size: 12px;
-  color: var(--text);
+  color: var(--on-primary);
 }
 
 .horItem strong {
@@ -129,7 +129,7 @@
 
 .card {
   background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(242, 224, 213, 0.15);
+  border: 1px solid rgba(var(--on-primary-rgb), 0.15);
   border-radius: 8px;
   padding: 10px 14px;
 }
@@ -145,7 +145,7 @@
   font-size: 24px;
   font-weight: 700;
   font-family: 'Fredoka', sans-serif;
-  color: var(--text);
+  color: var(--on-primary);
   margin-top: 4px;
 }
 
@@ -254,7 +254,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #120705;
+  background: var(--bg);
 }
 
 .aviso {

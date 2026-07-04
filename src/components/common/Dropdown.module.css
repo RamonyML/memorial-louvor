@@ -70,10 +70,10 @@
 
 .itemAtivo {
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
 }
 
 .itemAtivo:hover {
   background: var(--primary-hover);
-  color: #fff;
+  color: var(--on-primary);
 }

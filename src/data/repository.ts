@@ -1,5 +1,5 @@
 import {
-  collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc,
+  collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, setDoc,
   arrayUnion, arrayRemove, writeBatch, getDocs, type Unsubscribe,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
@@ -87,4 +87,17 @@ export async function gerarDomingosDoMes(ano: number, mes: number, datasExistent
   });
   await batch.commit();
   return faltantes.length;
+}
+
+// ── CONFIGURAÇÃO (tema) ─────────────────────────────────────
+const configDoc = doc(db, 'config', 'app');
+
+export function subscribeTema(cb: (temaId: string | null) => void): Unsubscribe {
+  return onSnapshot(configDoc, (snap) => {
+    cb(snap.exists() ? ((snap.data().temaId as string) ?? null) : null);
+  });
+}
+
+export async function salvarTema(temaId: string): Promise<void> {
+  await setDoc(configDoc, { temaId }, { merge: true });
 }

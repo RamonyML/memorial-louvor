@@ -7,11 +7,15 @@
   --primary-hover: #b85042;
   --primary-light: #3a2018;
   --primary-text: #d4937e;
+  --primary-deep: #7a352c;
+  --on-primary: #ffffff;
 
   /* acento (destaques, "hoje", export) */
   --accent: #d4a853;
+  --accent-rgb: 212, 168, 83;
   --accent-hover: #e0b868;
   --accent-light: #3a2f1a;
+  --on-accent: #1c1a17;
 
   /* neutros (tema escuro) */
   --bg: #1a0a07;
@@ -22,8 +26,10 @@
   --border-strong: #5c3428;
 
   --text: #f2e0d5;
+  --text-rgb: 242, 224, 213;
   --text-muted: #9a7060;
   --text-faint: #7a5548;
+  --on-primary-rgb: 255, 255, 255;
 
   /* estados */
   --success: #4ade80;
@@ -93,6 +99,9 @@ option {
   background: var(--surface);
   color: var(--text);
 }
+
+:root[data-mode='light'] { color-scheme: light; }
+:root[data-mode='light'] select { color-scheme: light; }
 
 /* ícones material symbols */
 .msym {

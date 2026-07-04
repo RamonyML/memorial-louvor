@@ -8,6 +8,7 @@ const TABS = [
   { to: '/admin/escala', label: 'Escala', icon: 'calendar_month' },
   { to: '/admin/musicos', label: 'Músicos', icon: 'groups' },
   { to: '/admin/exportar', label: 'Exportar', icon: 'ios_share' },
+  { to: '/admin/tema', label: 'Tema', icon: 'palette' },
 ];
 
 export function AdminLayout() {
